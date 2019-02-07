@@ -1,0 +1,19 @@
+[package]
+name = "node-wick"
+version = "0.1.0"
+authors = ["Waddlesworth <github@genj.io>"]
+license = "MIT"
+build = "build.rs"
+exclude = ["artifacts.json", "index.node"]
+
+[lib]
+name = "node_wick"
+crate-type = ["dylib"]
+
+[build-dependencies]
+neon-build = "0.2.0"
+
+[dependencies]
+neon = "0.2.0"
+neon-serde = "0.1"
+john-wick-parse = { git = "https://github.com/SirWaddles/JohnWickParse" }
