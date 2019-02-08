@@ -1,18 +1,33 @@
 {
-  "name": "node-wick",
-  "version": "0.1.0",
-  "description": "NodeJS Bindings for the JohnWickParse library",
-  "main": "lib/index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/SirWaddles/node-wick"
-  },
-  "author": "Waddlesworth <github@genj.io>",
-  "license": "MIT",
-  "dependencies": {
-    "neon-cli": "^0.2.0"
-  },
-  "scripts": {
-    "install": "neon build"
-  }
+    "name": "node-wick",
+    "version": "0.1.1",
+    "description": "NodeJS Bindings for the JohnWickParse library",
+    "main": "lib/index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/SirWaddles/node-wick.git"
+    },
+    "author": "Waddlesworth <github@genj.io>",
+    "license": "MIT",
+    "devDependencies": {
+        "neon-cli": "^0.2.0"
+    },
+    "scripts": {
+        "compile": "neon build --release"
+    },
+    "dependencies": {
+        "node-pre-gyp": "^0.12.0"
+    },
+    "files": [
+        "bin-package/index.node",
+        "lib/"
+    ],
+    "binary": {
+        "module_name": "index",
+        "host": "https://github.com/SirWaddles/node-wick/releases/download/",
+        "remote_path": "{version}",
+        "package_name": "{node_abi}-{platform}-{arch}.tar.gz",
+        "module_path": "./bin-package",
+        "pkg_path": "."
+    }
 }
