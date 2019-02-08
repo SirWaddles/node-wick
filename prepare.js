@@ -18,5 +18,6 @@ function deleteFolderRecursive(path) {
 
 deleteFolderRecursive('./bin-package');
 fs.mkdirSync('./bin-package');
-neon_build.default(process.cwd());
-fs.copyFileSync('./native/index.node', './bin-package/index.node');
+neon_build.default(process.cwd()).then(v => {
+    fs.copyFileSync('./native/index.node', './bin-package/index.node');
+});
