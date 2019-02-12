@@ -4,17 +4,49 @@ extern crate neon_serde;
 extern crate john_wick_parse;
 
 use neon::prelude::*;
+use john_wick_parse::{assets, read_texture as read_texture_asset};
 use john_wick_parse::archives::PakExtractor;
 
 fn read_asset(mut cx: FunctionContext) -> JsResult<JsValue> {
     let asset_path = cx.argument::<JsString>(0)?.value();
-    let package = match john_wick_parse::assets::Package::from_file(&asset_path) {
+    let package = match assets::Package::from_file(&asset_path) {
         Ok(data) => data,
         Err(_) => return Ok(JsUndefined::new().upcast()),
     };
 
     let js_asset = neon_serde::to_value(&mut cx, &package)?;
     Ok(js_asset)
+}
+
+fn read_texture(mut cx: FunctionContext) -> JsResult<JsValue> {
+    let asset_path = cx.argument::<JsString>(0)?.value();
+    let package = match assets::Package::from_file(&asset_path) {
+        Ok(data) => data,
+        Err(_) => return Ok(JsUndefined::new().upcast()),
+    };
+
+    let texture_data = match read_texture_asset(&package) {
+        Ok(data) => data,
+        Err(_) => return Ok(JsUndefined::new().upcast()),
+    };
+
+    let tex_buffer = {
+        let mut buffer = JsBuffer::new(&mut cx, texture_data.data.len() as u32)?;
+        let guard = cx.lock();
+        let mut contents = buffer.borrow(&guard);
+        let mut slice = contents.as_mut_slice();
+        slice.copy_from_slice(&texture_data.data);
+        buffer
+    };
+
+    let object = JsObject::new(&mut cx);
+    let texture_width = cx.number(texture_data.width as f64);
+    let texture_height = cx.number(texture_data.height as f64);
+    object.set(&mut cx, "width", texture_width).unwrap();
+    object.set(&mut cx, "height", texture_height).unwrap();
+    object.set(&mut cx, "data", tex_buffer).unwrap();
+
+    Ok(object.upcast())
 }
 
 declare_types! {
@@ -71,6 +103,7 @@ declare_types! {
 
 register_module!(mut cx, {
     cx.export_function("read_asset", read_asset)?;
+    cx.export_function("read_texture", read_texture)?;
     cx.export_class::<JsPakExtractor>("PakExtractor")?;
     Ok(())
 });

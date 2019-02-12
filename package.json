@@ -1,6 +1,6 @@
 {
     "name": "node-wick",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "description": "NodeJS Bindings for the JohnWickParse library",
     "main": "lib/index.js",
     "repository": {
@@ -14,7 +14,8 @@
     },
     "scripts": {
         "compile": "neon build --release",
-        "install": "node-pre-gyp install"
+        "install": "node-pre-gyp install",
+		"package": "node-pre-gyp package"
     },
     "dependencies": {
         "node-pre-gyp": "^0.12.0"
