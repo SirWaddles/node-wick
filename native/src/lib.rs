@@ -7,11 +7,15 @@ use neon::prelude::*;
 use john_wick_parse::{assets, read_texture as read_texture_asset};
 use john_wick_parse::archives::PakExtractor;
 
+fn parse_err(err: assets::ParserError) -> String {
+    err.get_properties().into_iter().rev().fold(String::new(), |acc, v| acc + "\n" + v)
+}
+
 fn read_asset(mut cx: FunctionContext) -> JsResult<JsValue> {
     let asset_path = cx.argument::<JsString>(0)?.value();
     let package = match assets::Package::from_file(&asset_path) {
         Ok(data) => data,
-        Err(_) => return Ok(JsUndefined::new().upcast()),
+        Err(err) => return cx.throw_error(parse_err(err)),
     };
 
     let js_asset = neon_serde::to_value(&mut cx, &package)?;
@@ -22,31 +26,24 @@ fn read_texture(mut cx: FunctionContext) -> JsResult<JsValue> {
     let asset_path = cx.argument::<JsString>(0)?.value();
     let package = match assets::Package::from_file(&asset_path) {
         Ok(data) => data,
-        Err(_) => return Ok(JsUndefined::new().upcast()),
+        Err(err) => return cx.throw_error(parse_err(err)),
     };
 
     let texture_data = match read_texture_asset(&package) {
         Ok(data) => data,
-        Err(_) => return Ok(JsUndefined::new().upcast()),
+        Err(err) => return cx.throw_error(parse_err(err)),
     };
 
     let tex_buffer = {
-        let mut buffer = JsBuffer::new(&mut cx, texture_data.data.len() as u32)?;
+        let mut buffer = JsBuffer::new(&mut cx, texture_data.len() as u32)?;
         let guard = cx.lock();
         let mut contents = buffer.borrow(&guard);
         let mut slice = contents.as_mut_slice();
-        slice.copy_from_slice(&texture_data.data);
+        slice.copy_from_slice(&texture_data);
         buffer
     };
 
-    let object = JsObject::new(&mut cx);
-    let texture_width = cx.number(texture_data.width as f64);
-    let texture_height = cx.number(texture_data.height as f64);
-    object.set(&mut cx, "width", texture_width).unwrap();
-    object.set(&mut cx, "height", texture_height).unwrap();
-    object.set(&mut cx, "data", tex_buffer).unwrap();
-
-    Ok(object.upcast())
+    Ok(tex_buffer.upcast())
 }
 
 declare_types! {
@@ -56,7 +53,7 @@ declare_types! {
             let key = cx.argument::<JsString>(1)?.value();
             let extractor = match PakExtractor::new(&asset_path, &key) {
                 Ok(data) => data,
-                Err(_) => return Err(neon::result::Throw {}),
+                Err(err) => return cx.throw_error(parse_err(err)),
             };
 
             Ok(extractor)
