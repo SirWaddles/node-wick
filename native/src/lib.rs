@@ -4,6 +4,8 @@ extern crate neon_serde;
 extern crate john_wick_parse;
 
 use neon::prelude::*;
+use std::fs;
+use std::io::Write;
 use john_wick_parse::{assets, read_texture as read_texture_asset};
 use john_wick_parse::archives::PakExtractor;
 
@@ -29,7 +31,7 @@ fn read_texture(mut cx: FunctionContext) -> JsResult<JsValue> {
         Err(err) => return cx.throw_error(parse_err(err)),
     };
 
-    let texture_data = match read_texture_asset(&package) {
+    let texture_data = match read_texture_asset(package) {
         Ok(data) => data,
         Err(err) => return cx.throw_error(parse_err(err)),
     };
@@ -44,6 +46,25 @@ fn read_texture(mut cx: FunctionContext) -> JsResult<JsValue> {
     };
 
     Ok(tex_buffer.upcast())
+}
+
+fn read_texture_to_file(mut cx: FunctionContext) -> JsResult<JsValue> {
+    let asset_path = cx.argument::<JsString>(0)?.value();
+    let package = match assets::Package::from_file(&asset_path) {
+        Ok(data) => data,
+        Err(err) => return cx.throw_error(parse_err(err)),
+    };
+
+    let texture_path = cx.argument::<JsString>(1)?.value();
+
+    let texture_data = match read_texture_asset(package) {
+        Ok(data) => data,
+        Err(err) => return cx.throw_error(parse_err(err)),
+    };
+
+    let mut file = fs::File::create(texture_path).unwrap();
+    file.write_all(&texture_data).unwrap();
+    Ok(JsBoolean::new(&mut cx, true).upcast())
 }
 
 declare_types! {
@@ -101,6 +122,7 @@ declare_types! {
 register_module!(mut cx, {
     cx.export_function("read_asset", read_asset)?;
     cx.export_function("read_texture", read_texture)?;
+    cx.export_function("read_texture_to_file", read_texture_to_file)?;
     cx.export_class::<JsPakExtractor>("PakExtractor")?;
     Ok(())
 });
