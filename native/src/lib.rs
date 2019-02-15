@@ -67,6 +67,16 @@ fn read_texture_to_file(mut cx: FunctionContext) -> JsResult<JsValue> {
     Ok(JsBoolean::new(&mut cx, true).upcast())
 }
 
+fn read_pak_key(mut cx: FunctionContext) -> JsResult<JsString> {
+    let asset_path = cx.argument::<JsString>(0)?.value();
+    let header = match PakExtractor::new_header(&asset_path) {
+        Ok(data) => data,
+        Err(err) => return cx.throw_error(parse_err(err)),
+    };
+
+    Ok(JsString::new(&mut cx, header.get_key_guid().to_string()))
+}
+
 declare_types! {
     pub class JsPakExtractor for PakExtractor {
         init(mut cx) {
@@ -123,6 +133,7 @@ register_module!(mut cx, {
     cx.export_function("read_asset", read_asset)?;
     cx.export_function("read_texture", read_texture)?;
     cx.export_function("read_texture_to_file", read_texture_to_file)?;
+    cx.export_function("read_pak_key", read_pak_key)?;
     cx.export_class::<JsPakExtractor>("PakExtractor")?;
     Ok(())
 });
