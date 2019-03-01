@@ -16,7 +16,7 @@ let extractor = new PakExtractor("pakchunk.pak", "000000000000000000000000000000
 // Iterate over all the files in the pak, and extract them.
 // get_file_list returns an array of file paths within the pak. You will need the index in the array to extract the files.
 extractor.get_file_list().forEach((v, idx) => {
-    // get_file(index) returns a NodeJS Buffer with the file decrypted file contents.
+    // get_file(index) returns a NodeJS Buffer with the decrypted file contents.
     fs.writeFileSync(v, extractor.get_file(idx));
 });
 ```
