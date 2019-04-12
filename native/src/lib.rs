@@ -126,6 +126,16 @@ declare_types! {
             
             Ok(js_buffer.upcast())
         }
+
+        method get_mount_point(mut cx) {
+            let this = cx.this();
+            let mount_point = {
+                let guard = cx.lock();
+                let extractor = this.borrow(&guard);
+                extractor.get_mount_point().to_owned()
+            };
+            Ok(JsString::new(&mut cx, mount_point).upcast())
+        }
     }
 }
 
