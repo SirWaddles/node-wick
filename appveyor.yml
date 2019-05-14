@@ -1,6 +1,6 @@
 #skip_non_tags: true
 build_cloud: Docker
-image: Visual Studio 2017
+image: minimal-windowsservercore-ltsc2019
 
 environment:
     matrix:
