@@ -1,6 +1,6 @@
 [package]
 name = "node-wick"
-version = "1.1.0"
+version = "1.1.1"
 authors = ["Waddlesworth <github@genj.io>"]
 license = "MIT"
 build = "build.rs"
@@ -17,3 +17,6 @@ neon-build = "0.2.0"
 neon = "0.2.0"
 neon-serde = "0.1"
 john-wick-parse = { git = "https://github.com/SirWaddles/JohnWickParse" }
+
+[patch.crates-io]
+neon-runtime = { path = "E:\\GitHub\\neon\\crates\\neon-runtime" }
