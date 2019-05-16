@@ -4,13 +4,9 @@ build_cloud: Docker
 environment:
     matrix:
         - PLATFORM: x64
-          NODEJS_VERSION: "8"
-          RUST_TOOLCHAIN: stable-x86_64-pc-windows-msvc
-          docker_image: minimal-windowsservercore-ltsc2019
-        - PLATFORM: x64
           NODEJS_VERSION: "10"
           RUST_TOOLCHAIN: stable-x86_64-pc-windows-msvc
-          docker_image: appveyor/build-image:minimal-windowsservercore-ltsc2019
+          docker_image: mcr.microsoft.com/windows/servercore:ltsc2019
 
 install:
     - ps: Install-Product node $env:NODEJS_VERSION $env:PLATFORM
