@@ -36,7 +36,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "backtrace"
-version = "0.3.16"
+version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "autocfg 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -162,7 +162,7 @@ name = "error-chain"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "backtrace 0.3.16 (registry+https://github.com/rust-lang/crates.io-index)",
+ "backtrace 0.3.17 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -235,8 +235,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "john-wick-parse"
-version = "2.1.2"
-source = "git+https://github.com/SirWaddles/JohnWickParse#2d0b50c889e9eed3126e94d20f2a25176d77cb86"
+version = "2.1.3"
+source = "git+https://github.com/SirWaddles/JohnWickParse#93fb28a0d55f09841e6bce734a4c2add90d57b79"
 dependencies = [
  "bitreader 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "byteorder 1.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -324,7 +324,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cslice 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "neon-build 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "neon-runtime 0.2.0",
+ "neon-runtime 0.2.0 (git+https://github.com/SirWaddles/neon?branch=node12)",
  "semver 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -336,6 +336,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "neon-runtime"
 version = "0.2.0"
+source = "git+https://github.com/SirWaddles/neon?branch=node12#86aea22187c927e7fe00fb4585ab6f934c2ff23f"
 dependencies = [
  "cc 1.0.37 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 1.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -349,7 +350,7 @@ dependencies = [
  "cast 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "error-chain 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "neon 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "neon-runtime 0.2.0",
+ "neon-runtime 0.2.0 (git+https://github.com/SirWaddles/neon?branch=node12)",
  "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -357,7 +358,7 @@ dependencies = [
 name = "node-wick"
 version = "1.1.1"
 dependencies = [
- "john-wick-parse 2.1.2 (git+https://github.com/SirWaddles/JohnWickParse)",
+ "john-wick-parse 2.1.3 (git+https://github.com/SirWaddles/JohnWickParse)",
  "neon 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "neon-build 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "neon-serde 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -770,7 +771,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum aho-corasick 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)" = "e6f484ae0c99fec2e858eb6134949117399f222608d84cadb3f58c1f97c2364c"
 "checksum arrayvec 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)" = "92c7fb76bc8826a8b33b4ee5bb07a247a81e76764ab4d55e8f73e3a4d8808c71"
 "checksum autocfg 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "a6d640bee2da49f60a4068a7fae53acde8982514ab7bae8b8cea9e88cbcfd799"
-"checksum backtrace 0.3.16 (registry+https://github.com/rust-lang/crates.io-index)" = "56acb7e9c23cb8c3a1f51713695c552a81ee667d9fd060d1ef407908480b7174"
+"checksum backtrace 0.3.17 (registry+https://github.com/rust-lang/crates.io-index)" = "70af6de4789ac39587f100176ac7f704531e9e534b0f8676f658b3d909ce9a94"
 "checksum backtrace-sys 0.1.28 (registry+https://github.com/rust-lang/crates.io-index)" = "797c830ac25ccc92a7f8a7b9862bde440715531514594a6154e3d4a54dd769b6"
 "checksum bitflags 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)" = "228047a76f468627ca71776ecdebd732a3423081fcf5125585bcd7c49886ce12"
 "checksum bitreader 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "a13e712f6e04f0e507a913abf5e008ba2a342ec26d9fac34ba0766bd77ced5b8"
@@ -796,7 +797,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum image 0.21.0 (git+https://github.com/SirWaddles/image)" = "<none>"
 "checksum inflate 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)" = "1cdb29978cc5797bd8dcc8e5bf7de604891df2a8dc576973d71a281e916db2ff"
 "checksum itoa 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)" = "501266b7edd0174f8530248f87f99c88fbe60ca4ef3dd486835b8d8d53136f7f"
-"checksum john-wick-parse 2.1.2 (git+https://github.com/SirWaddles/JohnWickParse)" = "<none>"
+"checksum john-wick-parse 2.1.3 (git+https://github.com/SirWaddles/JohnWickParse)" = "<none>"
 "checksum jpeg-decoder 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)" = "c8b7d43206b34b3f94ea9445174bda196e772049b9bddbc620c9d29b2d20110d"
 "checksum kernel32-sys 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "7507624b29483431c0ba2d82aece8ca6cdba9382bff4ddd0f7490560c056098d"
 "checksum lazy_static 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "bc5729f27f159ddd61f4df6228e827e86643d4d3e7c32183cb30a1c08f604a14"
@@ -809,6 +810,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum memoffset 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "0f9dc261e2b62d7a622bf416ea3c5245cdd5d9a7fcc428c0d06804dfce1775b3"
 "checksum neon 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "fd2e4dcd1e15c5944d89d283ec7c3b1b4ef83b5d2227b3b5d91d33224a45c7a3"
 "checksum neon-build 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "870c8f0b18ce83d8af6d95b9b723678aef55c047f29e09ac3e3d10ceecf57fd0"
+"checksum neon-runtime 0.2.0 (git+https://github.com/SirWaddles/neon?branch=node12)" = "<none>"
 "checksum neon-serde 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "426deefc3718e89c8ee4528db5a8e71776f9326a387629b83b705ee2c1dae198"
 "checksum nodrop 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)" = "2f9667ddcc6cc8a43afc9b7917599d7216aa09c463919ea32c59ed6cac8bc945"
 "checksum num 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)" = "4703ad64153382334aa8db57c637364c322d3372e097840c72000dabdcf6156e"

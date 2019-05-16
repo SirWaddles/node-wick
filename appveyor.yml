@@ -1,15 +1,16 @@
 #skip_non_tags: true
 build_cloud: Docker
-image: minimal-windowsservercore-ltsc2019
 
 environment:
     matrix:
         - PLATFORM: x64
           NODEJS_VERSION: "8"
           RUST_TOOLCHAIN: stable-x86_64-pc-windows-msvc
+          docker_image: minimal-windowsservercore-ltsc2019
         - PLATFORM: x64
           NODEJS_VERSION: "10"
           RUST_TOOLCHAIN: stable-x86_64-pc-windows-msvc
+          docker_image: minimal-windowsservercore-ltsc2019
 
 install:
     - ps: Install-Product node $env:NODEJS_VERSION $env:PLATFORM

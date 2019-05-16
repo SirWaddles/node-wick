@@ -19,4 +19,4 @@ neon-serde = "0.1"
 john-wick-parse = { git = "https://github.com/SirWaddles/JohnWickParse" }
 
 [patch.crates-io]
-neon-runtime = { path = "E:\\GitHub\\neon\\crates\\neon-runtime" }
+neon-runtime = { git = "https://github.com/SirWaddles/neon", branch="node12" }
