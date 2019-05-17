@@ -6,5 +6,5 @@ environment:
         - docker_image: genjio/neon:10
 
 build_script:
-    - npm install
+    - npm install neon-cli
     - node ./prepare.js
