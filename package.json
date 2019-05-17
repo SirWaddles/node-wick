@@ -15,7 +15,8 @@
     "scripts": {
         "compile": "neon build --release",
         "install": "node-pre-gyp install",
-        "package": "node-pre-gyp package"
+        "package": "node-pre-gyp package",
+        "gpublish": "node-pre-gyp-github publish"
     },
     "dependencies": {
         "node-pre-gyp": "^0.12.0"
