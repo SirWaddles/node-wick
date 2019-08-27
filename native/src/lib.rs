@@ -96,10 +96,10 @@ declare_types! {
                 extractor.get_file(&file)
             };
             let js_buffer = {
-                let mut buffer = JsBuffer::new(&mut cx, file.len() as u32)?;
+                let buffer = JsBuffer::new(&mut cx, file.len() as u32)?;
                 let guard = cx.lock();
-                let mut contents = buffer.borrow(&guard);
-                let mut slice = contents.as_mut_slice();
+                let contents = buffer.borrow(&guard);
+                let slice = contents.as_mut_slice();
                 slice.copy_from_slice(&file);
                 buffer
             };
@@ -198,10 +198,10 @@ declare_types! {
             };
 
             let tex_buffer = {
-                let mut buffer = JsBuffer::new(&mut cx, texture_data.len() as u32)?;
+                let buffer = JsBuffer::new(&mut cx, texture_data.len() as u32)?;
                 let guard = cx.lock();
-                let mut contents = buffer.borrow(&guard);
-                let mut slice = contents.as_mut_slice();
+                let contents = buffer.borrow(&guard);
+                let slice = contents.as_mut_slice();
                 slice.copy_from_slice(&texture_data);
                 buffer
             };
