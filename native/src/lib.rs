@@ -14,6 +14,16 @@ fn parse_err(err: assets::ParserError) -> String {
     err.get_properties().into_iter().rev().fold(String::new(), |acc, v| acc + "\n" + v)
 }
 
+fn get_buffer_contents_fn(cx: &mut FunctionContext, buffer: Handle<JsBuffer>) -> Vec<u8> {
+    let guard = cx.lock();
+    let contents = buffer.borrow(&guard);
+    let slice = contents.as_slice();
+    let mut buffer_data = vec![0u8; slice.len()];
+    buffer_data.as_mut_slice().copy_from_slice(slice);
+
+    buffer_data
+}
+
 fn get_buffer_contents(cx: &mut MethodContext<JsUndefined>, buffer: Handle<JsBuffer>) -> Vec<u8> {
     let guard = cx.lock();
     let contents = buffer.borrow(&guard);
@@ -51,6 +61,17 @@ fn read_pak_key(mut cx: FunctionContext) -> JsResult<JsString> {
     };
 
     Ok(JsString::new(&mut cx, header.get_key_guid().to_string()))
+}
+
+fn read_locale(mut cx: FunctionContext) -> JsResult<JsValue> {
+    let locres_js = cx.argument::<JsBuffer>(0)?;
+    let locale_data = get_buffer_contents_fn(&mut cx, locres_js);
+    let package = match assets::locale::FTextLocalizationResource::from_buffer(locale_data) {
+        Ok(data) => data,
+        Err(err) => return cx.throw_error(parse_err(err)),
+    };
+    let js_data = neon_serde::to_value(&mut cx, &package)?;
+    Ok(js_data)
 }
 
 pub struct Package {
@@ -214,6 +235,7 @@ declare_types! {
 register_module!(mut cx, {
     cx.export_function("read_texture_to_file", read_texture_to_file)?;
     cx.export_function("read_pak_key", read_pak_key)?;
+    cx.export_function("read_locale", read_locale)?;
     cx.export_class::<JsPakExtractor>("PakExtractor")?;
     cx.export_class::<JsPackage>("Package")?;
     Ok(())
