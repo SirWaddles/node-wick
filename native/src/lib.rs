@@ -66,7 +66,7 @@ fn read_pak_key(mut cx: FunctionContext) -> JsResult<JsString> {
 fn read_locale(mut cx: FunctionContext) -> JsResult<JsValue> {
     let locres_js = cx.argument::<JsBuffer>(0)?;
     let locale_data = get_buffer_contents_fn(&mut cx, locres_js);
-    let package = match assets::locale::FTextLocalizationResource::from_buffer(locale_data) {
+    let package = match assets::locale::FTextLocalizationResource::from_buffer(&locale_data) {
         Ok(data) => data,
         Err(err) => return cx.throw_error(parse_err(err)),
     };
@@ -103,7 +103,7 @@ declare_types! {
                 let js_string = cx.string(obj);
                 js_entries.set(&mut cx, i as u32, js_string).unwrap();
             }
-            
+
             Ok(js_entries.upcast())
         }
 
@@ -124,7 +124,7 @@ declare_types! {
                 slice.copy_from_slice(&file);
                 buffer
             };
-            
+
             Ok(js_buffer.upcast())
         }
 
@@ -159,15 +159,14 @@ declare_types! {
                     let uexp = get_buffer_contents(&mut cx, uexp_js);
 
                     let ubulk_js = match cx.argument_opt(2) {
-                        Some(arg) => Some(arg.downcast_or_throw(&mut cx)?),
-                        None => None,
-                    };
-                    let ubulk = match ubulk_js {
-                        Some(buffer) => Some(get_buffer_contents(&mut cx, buffer)),
+                        Some(arg) => {
+                            let buf_ref = arg.downcast_or_throw(&mut cx)?;
+                            Some(get_buffer_contents(&mut cx, buf_ref))
+                        },
                         None => None,
                     };
 
-                    let package = match assets::Package::from_buffer(uasset, uexp, ubulk) {
+                    let package = match assets::Package::from_buffer(&uasset, &uexp, match ubulk_js { Some(ref a) => Some(a.as_slice()), None => None}) {
                         Ok(data) => data,
                         Err(err) => return cx.throw_error(parse_err(err)),
                     };
@@ -181,13 +180,13 @@ declare_types! {
         method get_data(mut cx) {
             /*
              * Okay so this is stupid
-             * 
+             *
              * Neon's ref locks the internal value quite a bit. I need a mutable borrow on the CallContext in order
              * to generate the JS serialization. According to the documentation the solution seems to be "just clone it lol"
              * Interior mutability seemed like the only solution, but since no reference can outlast the lock, that leaves
-             * std::cell::Cell to the rescue. But I needed something to put back in the Cell while I'm using it. 
+             * std::cell::Cell to the rescue. But I needed something to put back in the Cell while I'm using it.
              * Hence the incredibly dumb ::empty function
-             * 
+             *
              * If there's a far better way of doing this that I'm being ignorant of, please let me know.
              */
             let this = cx.this();
