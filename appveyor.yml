@@ -5,10 +5,10 @@ environment:
     NODE_PRE_GYP_GITHUB_TOKEN:
         secure: 03IxabmXiMYR8n/pfRgM3jFl1CgyLHYmlk2tLORdnmZ8WBs6jqxIbkPSSSThDCDj
     matrix:
-        - docker_image: genjio/neon:10
         - docker_image: genjio/neon:12
-        - docker_image: genjio/neon:10linux
+        - docker_image: genjio/neon:13
         - docker_image: genjio/neon:12linux
+        - docker_image: genjio/neon:13linux
 
 build_script:
     - npm install neon-cli
