@@ -3,10 +3,10 @@ build_cloud: Docker
 
 environment:
     NODE_PRE_GYP_GITHUB_TOKEN:
-        secure: 03IxabmXiMYR8n/pfRgM3jFl1CgyLHYmlk2tLORdnmZ8WBs6jqxIbkPSSSThDCDj
+        secure: Zh43B0KIrvQ1fGlxYtxsA2NuDVPf8bR7iGTwk2m3HlfaBSthJ8jBl6WU/xfrzLCV
     matrix:
-        - docker_image: genjio/neon:12
-        - docker_image: genjio/neon:13
+        - docker_image: genjio/neon:12win
+        - docker_image: genjio/neon:13win
         - docker_image: genjio/neon:12linux
         - docker_image: genjio/neon:13linux
 
