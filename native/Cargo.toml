@@ -11,12 +11,9 @@ name = "node_wick"
 crate-type = ["dylib"]
 
 [build-dependencies]
-neon-build = "0.2.0"
+neon-build = "0.4"
 
 [dependencies]
-neon = "0.2.0"
-neon-serde = "0.1"
+neon = "0.4"
+neon-serde = { git = "https://github.com/GabrielCastro/neon-serde" }
 john-wick-parse = { git = "https://github.com/SirWaddles/JohnWickParse" }
-
-[patch.crates-io]
-neon-runtime = { git = "https://github.com/SirWaddles/neon", branch="node12" }
