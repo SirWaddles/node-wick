@@ -478,7 +478,7 @@ dependencies = [
 
 [[package]]
 name = "node-wick"
-version = "3.0.3"
+version = "3.0.4"
 dependencies = [
  "john-wick-parse 4.1.0 (git+https://github.com/SirWaddles/JohnWickParse)",
  "neon 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
