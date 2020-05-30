@@ -1,6 +1,6 @@
 {
     "name": "node-wick",
-    "version": "3.0.4",
+    "version": "3.1.0",
     "description": "NodeJS Bindings for the JohnWickParse library",
     "main": "lib/index.js",
     "repository": {
