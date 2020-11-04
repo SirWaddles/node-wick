@@ -1,14 +1,9 @@
-#[macro_use]
-extern crate neon;
-extern crate neon_serde;
-extern crate john_wick_parse;
-
 use neon::prelude::*;
 use std::fs;
 use std::io::Write;
 use std::cell::Cell;
-use john_wick_parse::{assets, read_texture as read_texture_asset, read_sound};
-use john_wick_parse::archives::PakExtractor;
+use john_wick_parse::{assets, read_asset, read_asset_from_file, read_texture as read_texture_asset};
+use john_wick_parse::dispatch::Extractor;
 
 fn parse_err(err: assets::ParserError) -> String {
     err.get_properties().into_iter().rev().fold(String::new(), |acc, v| acc + "\n" + v)
@@ -36,7 +31,7 @@ fn get_buffer_contents(cx: &mut MethodContext<JsUndefined>, buffer: Handle<JsBuf
 
 fn read_texture_to_file(mut cx: FunctionContext) -> JsResult<JsValue> {
     let asset_path = cx.argument::<JsString>(0)?.value();
-    let package = match assets::Package::from_file(&asset_path) {
+    let package = match read_asset_from_file(&asset_path) {
         Ok(data) => data,
         Err(err) => return cx.throw_error(parse_err(err)),
     };
@@ -55,7 +50,7 @@ fn read_texture_to_file(mut cx: FunctionContext) -> JsResult<JsValue> {
 
 fn read_pak_key(mut cx: FunctionContext) -> JsResult<JsString> {
     let asset_path = cx.argument::<JsString>(0)?.value();
-    let header = match PakExtractor::new_header(&asset_path) {
+    let header = match Extractor::new_header(&asset_path) {
         Ok(data) => data,
         Err(err) => return cx.throw_error(parse_err(err)),
     };
@@ -79,11 +74,11 @@ pub struct Package {
 }
 
 declare_types! {
-    pub class JsPakExtractor for PakExtractor {
+    pub class JsExtractor for Extractor {
         init(mut cx) {
             let asset_path = cx.argument::<JsString>(0)?.value();
             let key = cx.argument::<JsString>(1)?.value();
-            let extractor = match PakExtractor::new(&asset_path, &key) {
+            let extractor = match Extractor::new(&asset_path, Some(&key)) {
                 Ok(data) => data,
                 Err(err) => return cx.throw_error(parse_err(err)),
             };
@@ -96,7 +91,7 @@ declare_types! {
             let file_list: Vec<String> = {
                 let guard = cx.lock();
                 let extractor = this.borrow(&guard);
-                extractor.get_entries().into_iter().map(|v| v.get_filename().to_owned()).collect()
+                extractor.get_file_list().clone()
             };
             let js_entries = JsArray::new(&mut cx, file_list.len() as u32);
             for (i, obj) in file_list.iter().enumerate() {
@@ -109,12 +104,11 @@ declare_types! {
 
         method get_file(mut cx) {
             let mut this = cx.this();
-            let file_index = cx.argument::<JsNumber>(0)?.value() as usize;
+            let file_index = cx.argument::<JsString>(0)?.value();
             let file: Vec<u8> = {
                 let guard = cx.lock();
                 let mut extractor = this.borrow_mut(&guard);
-                let file = extractor.get_entries().get(file_index).unwrap().clone();
-                extractor.get_file(&file)
+                extractor.get_file(&file_index).unwrap()
             };
             let js_buffer = {
                 let buffer = JsBuffer::new(&mut cx, file.len() as u32)?;
@@ -144,7 +138,7 @@ declare_types! {
             match cx.len() {
                 1 => {
                     let asset_path = cx.argument::<JsString>(0)?.value();
-                    let package = match assets::Package::from_file(&asset_path) {
+                    let package = match read_asset_from_file(&asset_path) {
                         Ok(data) => data,
                         Err(err) => return cx.throw_error(parse_err(err)),
                     };
@@ -154,11 +148,9 @@ declare_types! {
                 },
                 _ => {
                     let uasset_js = cx.argument::<JsBuffer>(0)?;
-                    let uexp_js = cx.argument::<JsBuffer>(1)?;
                     let uasset = get_buffer_contents(&mut cx, uasset_js);
-                    let uexp = get_buffer_contents(&mut cx, uexp_js);
 
-                    let ubulk_js = match cx.argument_opt(2) {
+                    let ubulk_js = match cx.argument_opt(1) {
                         Some(arg) => {
                             let buf_ref = arg.downcast_or_throw(&mut cx)?;
                             Some(get_buffer_contents(&mut cx, buf_ref))
@@ -166,7 +158,7 @@ declare_types! {
                         None => None,
                     };
 
-                    let package = match assets::Package::from_buffer(&uasset, &uexp, match ubulk_js { Some(ref a) => Some(a.as_slice()), None => None}) {
+                    let package = match read_asset(&uasset, match ubulk_js { Some(ref a) => Some(a.as_slice()), None => None}) {
                         Ok(data) => data,
                         Err(err) => return cx.throw_error(parse_err(err)),
                     };
@@ -178,17 +170,6 @@ declare_types! {
         }
 
         method get_data(mut cx) {
-            /*
-             * Okay so this is stupid
-             *
-             * Neon's ref locks the internal value quite a bit. I need a mutable borrow on the CallContext in order
-             * to generate the JS serialization. According to the documentation the solution seems to be "just clone it lol"
-             * Interior mutability seemed like the only solution, but since no reference can outlast the lock, that leaves
-             * std::cell::Cell to the rescue. But I needed something to put back in the Cell while I'm using it.
-             * Hence the incredibly dumb ::empty function
-             *
-             * If there's a far better way of doing this that I'm being ignorant of, please let me know.
-             */
             let this = cx.this();
             let package = {
                 let guard = cx.lock();
@@ -228,31 +209,6 @@ declare_types! {
 
             Ok(tex_buffer.upcast())
         }
-
-        method get_sound(mut cx) {
-            let this = cx.this();
-            let package = {
-                let guard = cx.lock();
-                let data = this.borrow(&guard);
-                data.package.replace(assets::Package::empty())
-            };
-
-            let sound_data = match read_sound(package) {
-                Ok(data) => data,
-                Err(err) => return cx.throw_error(parse_err(err)),
-            };
-
-            let audio_buffer = {
-                let buffer = JsBuffer::new(&mut cx, sound_data.len() as u32)?;
-                let guard = cx.lock();
-                let contents = buffer.borrow(&guard);
-                let slice = contents.as_mut_slice();
-                slice.copy_from_slice(&sound_data);
-                buffer
-            };
-
-            Ok(audio_buffer.upcast())
-        }
     }
 }
 
@@ -260,7 +216,7 @@ register_module!(mut cx, {
     cx.export_function("read_texture_to_file", read_texture_to_file)?;
     cx.export_function("read_pak_key", read_pak_key)?;
     cx.export_function("read_locale", read_locale)?;
-    cx.export_class::<JsPakExtractor>("PakExtractor")?;
+    cx.export_class::<JsExtractor>("Extractor")?;
     cx.export_class::<JsPackage>("Package")?;
     Ok(())
 });
