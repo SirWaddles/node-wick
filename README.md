@@ -37,7 +37,7 @@ As of Fortnite 14.40, asset files now use a format known as 'Unversioned Propert
 
 The official mapping files for `node-wick` are hosted on the [JohnWickParse repository](https://github.com/SirWaddles/JohnWickParse/tree/master/mappings). However, these are incomplete, and are at best, the bare minimum required to parse the item descriptions for the Fortnite shop.
 
-[Lucas7Yoshi](https://twitter.com/Lucas7yoshi) also maintains a repository of asset class mappings, which you can find on his [GitHub repository](https://github.com/Lucas7yoshi/FNMappingsJWP).
+[Lucas7yoshi](https://twitter.com/Lucas7yoshi) also maintains a repository of asset class mappings, which you can find on his [GitHub repository](https://github.com/Lucas7yoshi/FNMappingsJWP).
 
 [FunGames](https://twitter.com/FunGamesLeaks) and [Officer](https://twitter.com/Not0fficer) also maintain a [repository of mapping files](https://github.com/FabianFG/FortniteTypeMappings), however these are in a different format to that used by `node-wick`, but a converter can be used to translate these mappings.
 
