@@ -151,8 +151,12 @@ declare_types! {
 
                 let ubulk_js = match cx.argument_opt(1) {
                     Some(arg) => {
-                        let buf_ref = arg.downcast_or_throw(&mut cx)?;
-                        Some(get_buffer_contents(&mut cx, buf_ref))
+                        if arg.is_a::<JsBuffer>() {
+                            let buf_ref = arg.downcast_or_throw(&mut cx)?;
+                            Some(get_buffer_contents(&mut cx, buf_ref))
+                        } else {
+                            None
+                        }
                     },
                     None => None,
                 };
