@@ -135,37 +135,37 @@ declare_types! {
 
     pub class JsPackage for Package {
         init(mut cx) {
-            match cx.len() {
-                1 => {
-                    let asset_path = cx.argument::<JsString>(0)?.value();
-                    let package = match read_asset_from_file(&asset_path) {
-                        Ok(data) => data,
-                        Err(err) => return cx.throw_error(parse_err(err)),
-                    };
-                    Ok(Package {
-                        package: Cell::new(package),
-                    })
-                },
-                _ => {
-                    let uasset_js = cx.argument::<JsBuffer>(0)?;
-                    let uasset = get_buffer_contents(&mut cx, uasset_js);
+            let arg = cx.argument::<JsValue>(0)?;
+            if arg.is_a::<JsString>() {
+                let asset_path = cx.argument::<JsString>(0)?.value();
+                let package = match read_asset_from_file(&asset_path) {
+                    Ok(data) => data,
+                    Err(err) => return cx.throw_error(parse_err(err)),
+                };
+                Ok(Package {
+                    package: Cell::new(package),
+                })
+            } else if arg.is_a::<JsBuffer>() {
+                let uasset_js = cx.argument::<JsBuffer>(0)?;
+                let uasset = get_buffer_contents(&mut cx, uasset_js);
 
-                    let ubulk_js = match cx.argument_opt(1) {
-                        Some(arg) => {
-                            let buf_ref = arg.downcast_or_throw(&mut cx)?;
-                            Some(get_buffer_contents(&mut cx, buf_ref))
-                        },
-                        None => None,
-                    };
+                let ubulk_js = match cx.argument_opt(1) {
+                    Some(arg) => {
+                        let buf_ref = arg.downcast_or_throw(&mut cx)?;
+                        Some(get_buffer_contents(&mut cx, buf_ref))
+                    },
+                    None => None,
+                };
 
-                    let package = match read_asset(&uasset, match ubulk_js { Some(ref a) => Some(a.as_slice()), None => None}) {
-                        Ok(data) => data,
-                        Err(err) => return cx.throw_error(parse_err(err)),
-                    };
-                    Ok(Package {
-                        package: Cell::new(package),
-                    })
-                }
+                let package = match read_asset(&uasset, match ubulk_js { Some(ref a) => Some(a.as_slice()), None => None}) {
+                    Ok(data) => data,
+                    Err(err) => return cx.throw_error(parse_err(err)),
+                };
+                Ok(Package {
+                    package: Cell::new(package),
+                })
+            } else {
+                cx.throw_error(format!("Incorrect Type"))
             }
         }
 
