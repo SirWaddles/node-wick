@@ -1,6 +1,6 @@
 [package]
 name = "node-wick"
-version = "4.0.2"
+version = "4.0.3"
 edition = "2018"
 authors = ["Waddlesworth <github@genj.io>"]
 license = "MIT"
