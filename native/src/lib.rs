@@ -2,7 +2,7 @@ use neon::prelude::*;
 use std::fs;
 use std::io::Write;
 use std::cell::Cell;
-use john_wick_parse::{assets, read_asset, read_asset_from_file, read_texture as read_texture_asset};
+use john_wick_parse::{assets, read_asset, read_asset_from_file, read_texture as read_texture_asset, read_sound};
 use john_wick_parse::dispatch::Extractor;
 
 fn parse_err(err: assets::ParserError) -> String {
@@ -212,6 +212,31 @@ declare_types! {
             };
 
             Ok(tex_buffer.upcast())
+        }
+
+        method get_sound(mut cx) {
+            let this = cx.this();
+            let package = {
+                let guard = cx.lock();
+                let data = this.borrow(&guard);
+                data.package.replace(assets::Package::empty())
+            };
+
+            let sound_data = match read_sound(package) {
+                Ok(data) => data,
+                Err(err) => return cx.throw_error(parse_err(err)),
+            };
+
+            let s_buffer = {
+                let buffer = JsBuffer::new(&mut cx, sound_data.len() as u32)?;
+                let guard = cx.lock();
+                let contents = buffer.borrow(&guard);
+                let slice = contents.as_mut_slice();
+                slice.copy_from_slice(&sound_data);
+                buffer
+            };
+
+            Ok(s_buffer.upcast())
         }
     }
 }
